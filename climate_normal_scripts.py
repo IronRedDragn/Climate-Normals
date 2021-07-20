@@ -5,20 +5,31 @@ from bs4 import BeautifulSoup as bsoup
 import tarfile
 import csv
 
+main_url = 'https://www.ncei.noaa.gov/data/'
 dataFolder = './data/station_normals/'
 txtFiles_Folder = './txt_files/'
-normals_dict = { '1981-2010': ('normals-hourly','normals-daily', 'normals-monthly'),
-                 '1991-2020': ('normals-hourly','normals-daily', 'normals-monthly'),
-                 '2006-2020': ('normals-hourly','normals-daily', 'normals-monthly')
-                 }
-main_url = 'https://www.ncei.noaa.gov/data/'
+normals_dict = {'1981-2010': ('normals-hourly','normals-daily', 'normals-monthly'),
+                    '1991-2020': ('normals-hourly','normals-daily', 'normals-monthly'),
+                    '2006-2020': ('normals-hourly','normals-daily', 'normals-monthly')
+                }
+
+def check_folders():
+    if not os.path.exists(dataFolder):
+        os.makedirs(dataFolder)
+
+    if not os.path.exists(txtFiles_Folder):
+        os.makedirs(txtFiles_Folder)
+    return
+
 
 
 def get_climate_normals(main_url, normal_type, normal_period, normalFolder):
-        
+
+    print(f'Getting {normal_period} normals...')
+
     if os.path.exists(f'{normalFolder}station_files'):
         return print(f'{normal_period} {normal_type} already downloaded...')
-        
+    
     base_url = f'{main_url}{normal_type}/{normal_period}/archive/'
    
     if normal_period == '1981-2010':
@@ -29,11 +40,11 @@ def get_climate_normals(main_url, normal_type, normal_period, normalFolder):
         for link in soup.findAll('a'):
             if 'station' in  link.text:
                 tar_url = f'{base_url}{link.text}'
-        
+
+
     ftpstream = req.urlopen(tar_url)
     file = tarfile.open(fileobj = ftpstream, mode = 'r|gz')
     
-    print(f'Getting {normal_period} normals...')
     print(f'*** {normal_type} extracting to {normalFolder}station_files ***')
     file.extractall(f'{normalFolder}station_files')
     return print(f'*** {normal_type} extraction completed ***')
@@ -103,7 +114,7 @@ The decision to format the column is based off the documentation found on the nc
     return print(f'Headers files generated at {txtFiles_Folder}csv_headers/')
 
 def main():
-
+    check_folders()
     for normal_period, normal_types in normals_dict.items():
         for normal_type in normal_types:
             folder_location = f'{dataFolder}{normal_period}/{normal_type}/'

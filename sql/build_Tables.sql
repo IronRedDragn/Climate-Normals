@@ -1,7 +1,7 @@
 DROP TABLE state;
 CREATE TABLE state(
     STATELONG CHAR(50) NOT NULL,
-    STATEABBR CHAR(2) PRIMARY KEY NOT NULL);
+    STATEABBR CHAR(2) PRIMARY KEY);
 
 COPY state FROM '/home/acruz/Coding/Climate-Normals/txt_files/states.csv' DELIMITER ',' CSV HEADER;
 
